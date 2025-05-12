@@ -1,0 +1,7 @@
+__pycache__/ 
+.env 
+htmlcov/ 
+.coverage 
+.pytest_cache/ 
+*.png
+*.jpg

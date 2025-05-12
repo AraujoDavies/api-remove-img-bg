@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "remover-fundo-imagem"
+version = "0.1.0"
+description = ""
+authors = ["Davies <daviesaraujo@hotmail.com>"]
+readme = "README.md"
+packages = [{include = "remover_fundo_imagem"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = {extras = ["standard"], version = "^0.115.12"}
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^25.1.0"
+isort = "^6.0.1"
+pytest = "^8.3.5"
+pytest-cov = "^6.1.1"
+ipython = "8.15"
+python-dotenv = "^1.1.0"
+
+
+[tool.poetry.group.doc.dependencies]
+mkdocs-material = "^9.6.13"
+pyyaml = "6.0"
+mkdocstrings = "^0.29.1"
+mkdocstrings-python = "^1.16.10"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
