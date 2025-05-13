@@ -6,6 +6,7 @@ start: ## cria ambiente virtual com poetry e instala bibliotecas de dev
 	poetry add --group dev isort
 	poetry add --group dev pytest
 	poetry add --group dev pytest-cov
+	poetry add --group dev pytest-rerunfailures
 	poetry add --group dev ipython:8.15
 	poetry add --group dev python-dotenv
 	mkdir tests 
@@ -43,7 +44,7 @@ logs:
 
 .PHONY: mark-test
 mark-test: # make mark-test m=email
-	poetry run pytest . -x -s --cov=code -vv -m ${m} --reruns 2
+	poetry run pytest . -x -s --cov=code -vv -m ${m}
 	poetry run coverage html
 
 .PHONY: push
@@ -58,7 +59,7 @@ requirements:
 .PHONY: test
 test: 
 	@make format
-	poetry run pytest . -x -s --cov=code -vv --reruns 2
+	poetry run pytest . -x -s --cov=code -vv
 	poetry run coverage html
 
 .PHONY: up

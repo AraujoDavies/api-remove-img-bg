@@ -5,3 +5,6 @@ htmlcov/
 .pytest_cache/ 
 *.png
 *.jpg
+*.txt
+docs/
+mkdocs.yml
