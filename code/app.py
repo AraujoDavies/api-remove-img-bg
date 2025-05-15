@@ -26,6 +26,13 @@ async def http_exception_handler(request: Request, exc: HTTPException):
     )
 
 
+@app.get("/", summary="index html")
+def index():
+    with open("code/index.html", "r") as f:
+        html = f.read()
+    return HTMLResponse(content=html)
+
+
 @app.post(
     "/upload-file",
     summary="Upload file and return HTML that contains img new and old",
@@ -33,7 +40,13 @@ async def http_exception_handler(request: Request, exc: HTTPException):
         200: {
             "description": "Removed bg success",
             "content": {
-                "application/json": {"example": {"success": True, "html": "<img>..."}}
+                "application/json": {
+                    "example": {
+                        "success": True,
+                        "before_url": "input_base64",
+                        "after_url": "output_base64",
+                    }
+                }
             },
         },
         415: {
@@ -63,11 +76,12 @@ async def http_exception_handler(request: Request, exc: HTTPException):
     },
 )
 async def create_upload_file(file: UploadFile = File(...)):
-    if not file.filename.endswith((".png", ".jpg", ".jpeg")):
+    # verfy content type
+    if file.content_type not in ["image/png", "image/jpeg"]:
         raise HTTPException(status_code=415, detail="Only accept .png or .jpg")
 
     # size can't be too big
-    max_kb_accept = 500  # KB
+    max_kb_accept = 50000  # KB
     accept_size = max_kb_accept * 1024  # convert to bytes
 
     if file.size > accept_size:
@@ -83,22 +97,13 @@ async def create_upload_file(file: UploadFile = File(...)):
         input_b64 = base64.b64encode(input_bytes).decode("utf-8")
         output_b64 = base64.b64encode(output_bytes).decode("utf-8")
 
-        html_content = f"""
-        <html>
-            <body>
-                <h2>Original Image</h2>
-                <img src="data:image/png;base64,{input_b64}" style="max-width: 400px;"/>
-                <h2>Background Removed</h2>
-                <img src="data:image/png;base64,{output_b64}" style="max-width: 400px;"/>
-
-                <a href="data:image/png;base64,{output_b64}" download="output.png">
-                    <button style="padding: 10px 20px; font-size: 16px;">Download Image</button>
-                </a>
-            </body>
-        </html>
-        """
-        return JSONResponse(content={"success": True, "html": html_content})
-        return HTMLResponse(content=html_content)
+        return JSONResponse(
+            content={
+                "success": True,
+                "before_url": f"data:image/png;base64,{input_b64}",
+                "after_url": f"data:image/png;base64,{output_b64}",
+            }
+        )
     except Exception as error:
         logging.critical(error)
         raise HTTPException(status_code=500, detail="Internal server error")

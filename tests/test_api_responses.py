@@ -1,4 +1,3 @@
-import io
 from unittest.mock import patch
 
 import pytest
@@ -8,7 +7,7 @@ import pytest
 def test_if_returns_success(client_fastapi):
     with open("tests/imgs/pep.jpg", "rb") as f:
         response = client_fastapi.post(
-            "/upload-file", files={"file": ("test_pep.png", f, "image/png")}
+            "/upload-file", files={"file": (f.name, f, "image/png")}
         )
     assert response.status_code == 200
     assert response.json()["success"] == True
@@ -18,12 +17,13 @@ def test_if_returns_success(client_fastapi):
 def test_if_accept_only_jpg_or_png(client_fastapi):
     with open("tests/imgs/pep.txt", "rb") as f:
         response = client_fastapi.post(
-            "/upload-file", files={"file": (f.name, f, "image/png")}
+            "/upload-file", files={"file": (f.name, f, "text/plain")}
         )
     assert response.status_code == 415
     assert response.json()["error_message"] == "Only accept .png or .jpg"
 
 
+@pytest.mark.skip(reason="Now is more than 500kb")
 @pytest.mark.upload_file
 def test_if_accept_files_bigger_than_500kb(client_fastapi):
     with open("tests/imgs/big.png", "rb") as f:

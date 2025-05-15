@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Upload de Imagem</title>
+  <style>
+    body {
+      display: flex;               /* ativa o flexbox */
+      justify-content: center;     /* centraliza horizontalmente */
+      /*align-items: center;          centraliza verticalmente */
+      height: 100vh;               /* altura total da janela */
+      margin: 0;                  /* remove margens padrão do body */
+      font-family: Arial, sans-serif;
+    }
+    .container {
+      max-width: 1100px;
+      /* margin: 20px auto; */
+      /* text-align: center; */
+    }
+    #resposta {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+    }
+    #resposta > div {
+      text-align: center;
+    }
+    #resposta img {
+      width: 500px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      display: inline-block;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      background-color: #4caf50;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div style="text-align: center;">
+
+      <h2>Upload Imagem</h2>
+
+      <div>
+        <input type="file" id="arquivo" accept="image/png, image/jpeg" />
+        <button id="btn-enviar" onclick="enviarImagem()">Enviar</button>
+      </div>
+
+    </div>
+
+
+    <div id="resposta">
+      <!-- Imagens "Antes" e "Depois" aparecerão aqui -->
+      <!-- <div style="display: flex; gap: 30px; justify-content: center;">
+      <div style="text-align: center; max-width: 700px;">
+      <p>Antes</p>
+      <img src="https://cdn.vox-cdn.com/thumbor/oTqU6FmmvJXc3zolFI7cD3EXoWA=/0x0:4416x3130/920x613/filters:focal(2028x1520:2734x2226):format(webp)/cdn.vox-cdn.com/uploads/chorus_image/image/50910339/607237294.0.jpg"alt="Antes" style=" border: 1px solid #ccc; border-radius: 8px;" />
+      </div>
+      <div style="text-align: center; max-width: 700px;">
+      <p>Depois</p>
+      <img src="https://cdn.vox-cdn.com/thumbor/oTqU6FmmvJXc3zolFI7cD3EXoWA=/0x0:4416x3130/920x613/filters:focal(2028x1520:2734x2226):format(webp)/cdn.vox-cdn.com/uploads/chorus_image/image/50910339/607237294.0.jpg" alt="Depois" style="border: 1px solid #ccc; border-radius: 8px;" />
+      </div>
+      </div> -->
+    </div>
+
+    <div id="download" style="text-align: center;">
+      <!-- <a href="https://cdn.vox-cdn.com/thumbor/oTqU6FmmvJXc3zolFI7cD3EXoWA=/0x0:4416x3130/920x613/filters:focal(2028x1520:2734x2226):format(webp)/cdn.vox-cdn.com/uploads/chorus_image/image/50910339/607237294.0.jpg" download="img_recort.png">
+        <button style="padding: 10px 20px; font-size: 16px;">Download</button>
+      </a> -->
+    </div>
+
+
+  </div>
+
+  <script>
+    async function enviarImagem() {
+      const input = document.getElementById("arquivo");
+      const file = input.files[0];
+      if (!file) {
+        alert("Selecione uma imagem primeiro.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const download = document.getElementById("download");
+      const btn_enviar = document.getElementById("btn-enviar");
+
+      download.innerHTML = ""
+      btn_enviar.textContent = "Carregando..."
+      btn_enviar.disabled = true;
+      try {
+        const response = await fetch("http://127.0.0.1:8000/upload-file", {
+          method: "POST",
+          headers: {
+            "accept": "application/json"
+          },
+          body: formData
+        });
+
+        const data = await response.json();
+
+        const resposta = document.getElementById("resposta");
+        resposta.innerHTML = ""; // limpa conteúdo antigo
+
+        if (response.status === 200) {
+          // Aqui, o backend envia um HTML com 2 imgs? Vamos extrair e exibir lado a lado
+          const resposta = document.getElementById("resposta");
+          resposta.innerHTML = `
+          <div style="display: flex; gap: 30px; justify-content: center;">
+
+            <div style="text-align: center;">
+              <p>Antes</p>
+              <img src="${data.before_url}"
+              alt="Antes" style="width: 200px; height: 200px; border: 1px solid #ccc; border-radius: 8px;" />
+            </div>
+            <div style="text-align: center;">
+              <p>Depois</p>
+              <img src="${data.after_url}"
+              alt="Depois" style="width: 200px; height: 200px; border: 1px solid #ccc; border-radius: 8px;" />
+            </div>
+
+          </div>`
+          download.innerHTML = `<a href="${data.after_url}" download="img_recort.png"><button style="padding: 10px 20px; font-size: 16px;">Download Image</button></a>`
+
+        } else if (response.status === 415 || response.status === 500) {
+          resposta.innerHTML = `<div style="color: red;">${data.error_message}</div>`;
+        } else if (response.status === 422) {
+          resposta.textContent = "Erro de validação";
+        }
+      } catch (error) {
+        console.error("Erro ao enviar:", error);
+      } finally {
+        btn_enviar.textContent = "Pronto!";
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        btn_enviar.textContent = "Enviar";
+        btn_enviar.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>
