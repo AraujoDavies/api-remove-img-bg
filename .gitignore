@@ -3,8 +3,5 @@ __pycache__/
 htmlcov/ 
 .coverage 
 .pytest_cache/ 
-*.png
-*.jpg
-*.txt
 docs/
 mkdocs.yml
