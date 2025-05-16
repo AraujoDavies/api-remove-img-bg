@@ -8,6 +8,8 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel
 from rembg import remove
 from starlette.status import HTTP_422_UNPROCESSABLE_ENTITY
+from pathlib import Path
+
 
 logging.basicConfig(
     level=logging.CRITICAL,
@@ -63,7 +65,8 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 @app.get("/", summary="index html")
 def index():
-    with open("code/index.html", "r") as f:
+    html_path = Path(__file__).parent / "index.html"
+    with open(html_path, "r") as f:
         html = f.read()
     return HTMLResponse(content=html)
 

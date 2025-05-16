@@ -65,7 +65,7 @@
 
     <div id="resposta">
       <!-- Imagens "Antes" e "Depois" aparecerão aqui -->
-      <div style="display: flex; gap: 30px; justify-content: center;">
+      <!-- <div style="display: flex; gap: 30px; justify-content: center;">
         <div style="text-align: center;">
         <p>Antes</p>
         <img src="https://cdn.vox-cdn.com/thumbor/oTqU6FmmvJXc3zolFI7cD3EXoWA=/0x0:4416x3130/920x613/filters:focal(2028x1520:2734x2226):format(webp)/cdn.vox-cdn.com/uploads/chorus_image/image/50910339/607237294.0.jpg" alt="Antes" style=" border: 1px solid #ccc; border-radius: 8px;">
@@ -74,7 +74,7 @@
         <p>Depois</p>
         <img src="https://cdn.vox-cdn.com/thumbor/oTqU6FmmvJXc3zolFI7cD3EXoWA=/0x0:4416x3130/920x613/filters:focal(2028x1520:2734x2226):format(webp)/cdn.vox-cdn.com/uploads/chorus_image/image/50910339/607237294.0.jpg" alt="Depois" style="border: 1px solid #ccc; border-radius: 8px;">
         </div>
-      </div>
+      </div> -->
     </div>
 
     <div id="download" style="text-align: center;">
@@ -105,7 +105,7 @@
       btn_enviar.textContent = "Carregando..."
       btn_enviar.disabled = true;
       try {
-        const response = await fetch("http://127.0.0.1:8000/upload-file", {
+        const response = await fetch("http://localhost:8000/upload-file", {
           method: "POST",
           headers: {
             "accept": "application/json"
