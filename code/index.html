@@ -14,6 +14,7 @@
     }
     .container {
       max-width: 1100px;
+      min-width: 800px;
       /* margin: 20px auto; */
       /* text-align: center; */
     }
@@ -38,12 +39,12 @@
       font-size: 16px;
       border-radius: 8px;
       border: none;
-      background-color: #4caf50;
+      background-color: #2753cc;
       color: white;
       cursor: pointer;
     }
     button:hover {
-      background-color: #45a049;
+      background-color: #395ec6;
     }
   </style>
 </head>
@@ -64,16 +65,16 @@
 
     <div id="resposta">
       <!-- Imagens "Antes" e "Depois" aparecerão aqui -->
-      <!-- <div style="display: flex; gap: 30px; justify-content: center;">
-      <div style="text-align: center; max-width: 700px;">
-      <p>Antes</p>
-      <img src="https://cdn.vox-cdn.com/thumbor/oTqU6FmmvJXc3zolFI7cD3EXoWA=/0x0:4416x3130/920x613/filters:focal(2028x1520:2734x2226):format(webp)/cdn.vox-cdn.com/uploads/chorus_image/image/50910339/607237294.0.jpg"alt="Antes" style=" border: 1px solid #ccc; border-radius: 8px;" />
+      <div style="display: flex; gap: 30px; justify-content: center;">
+        <div style="text-align: center;">
+        <p>Antes</p>
+        <img src="https://cdn.vox-cdn.com/thumbor/oTqU6FmmvJXc3zolFI7cD3EXoWA=/0x0:4416x3130/920x613/filters:focal(2028x1520:2734x2226):format(webp)/cdn.vox-cdn.com/uploads/chorus_image/image/50910339/607237294.0.jpg" alt="Antes" style=" border: 1px solid #ccc; border-radius: 8px;">
+        </div>
+        <div style="text-align: center;">
+        <p>Depois</p>
+        <img src="https://cdn.vox-cdn.com/thumbor/oTqU6FmmvJXc3zolFI7cD3EXoWA=/0x0:4416x3130/920x613/filters:focal(2028x1520:2734x2226):format(webp)/cdn.vox-cdn.com/uploads/chorus_image/image/50910339/607237294.0.jpg" alt="Depois" style="border: 1px solid #ccc; border-radius: 8px;">
+        </div>
       </div>
-      <div style="text-align: center; max-width: 700px;">
-      <p>Depois</p>
-      <img src="https://cdn.vox-cdn.com/thumbor/oTqU6FmmvJXc3zolFI7cD3EXoWA=/0x0:4416x3130/920x613/filters:focal(2028x1520:2734x2226):format(webp)/cdn.vox-cdn.com/uploads/chorus_image/image/50910339/607237294.0.jpg" alt="Depois" style="border: 1px solid #ccc; border-radius: 8px;" />
-      </div>
-      </div> -->
     </div>
 
     <div id="download" style="text-align: center;">
@@ -126,21 +127,19 @@
             <div style="text-align: center;">
               <p>Antes</p>
               <img src="${data.before_url}"
-              alt="Antes" style="width: 200px; height: 200px; border: 1px solid #ccc; border-radius: 8px;" />
+              alt="Antes" style="border: 1px solid #ccc; border-radius: 8px;" />
             </div>
             <div style="text-align: center;">
               <p>Depois</p>
               <img src="${data.after_url}"
-              alt="Depois" style="width: 200px; height: 200px; border: 1px solid #ccc; border-radius: 8px;" />
+              alt="Depois" style="border: 1px solid #ccc; border-radius: 8px;" />
             </div>
 
           </div>`
           download.innerHTML = `<a href="${data.after_url}" download="img_recort.png"><button style="padding: 10px 20px; font-size: 16px;">Download Image</button></a>`
 
-        } else if (response.status === 415 || response.status === 500) {
+        } else if (response.status === 415 || response.status === 500 || response.status === 422) {
           resposta.innerHTML = `<div style="color: red;">${data.error_message}</div>`;
-        } else if (response.status === 422) {
-          resposta.textContent = "Erro de validação";
         }
       } catch (error) {
         console.error("Erro ao enviar:", error);
