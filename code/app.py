@@ -1,9 +1,13 @@
 import base64
 import logging
+from typing import List, Union
 
-from fastapi import FastAPI, File, HTTPException, Request, UploadFile
+from fastapi import Body, FastAPI, File, HTTPException, Request, UploadFile
+from fastapi.exceptions import RequestValidationError, ValidationException
 from fastapi.responses import HTMLResponse, JSONResponse
+from pydantic import BaseModel
 from rembg import remove
+from starlette.status import HTTP_422_UNPROCESSABLE_ENTITY
 
 logging.basicConfig(
     level=logging.CRITICAL,
@@ -11,7 +15,21 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s: %(message)s",
 )
 
-app = FastAPI(description="Remove background of any image")
+
+class ValidationErrorItem(BaseModel):
+    loc: List[Union[str, int]]
+    msg: str
+    type: str
+
+
+class CustomValidationErrorResponse(BaseModel):
+    success: bool = False
+    status: int = 422
+    error_message: str = "detail error"
+    # debug: List[ValidationErrorItem]
+
+
+app = FastAPI(title="API Remove BG", description="Remove background of any image")
 
 
 @app.exception_handler(HTTPException)
@@ -20,8 +38,25 @@ async def http_exception_handler(request: Request, exc: HTTPException):
         status_code=exc.status_code,
         content={
             "success": False,
-            "status_code": exc.status_code,
+            "status": exc.status_code,
             "error_message": exc.detail,
+        },
+    )
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    errors = exc.errors()
+    error_message = "Validation error"
+    if errors[0]["msg"] == "Field required":
+        error_message = "Validation error - Field required."
+
+    return JSONResponse(
+        status_code=HTTP_422_UNPROCESSABLE_ENTITY,
+        content={
+            "success": False,
+            "status": HTTP_422_UNPROCESSABLE_ENTITY,
+            "error_message": error_message,
         },
     )
 
@@ -60,6 +95,10 @@ def index():
                     }
                 }
             },
+        },
+        422: {
+            "model": CustomValidationErrorResponse,
+            "description": "Validation Error",
         },
         500: {
             "description": "Some error in process",

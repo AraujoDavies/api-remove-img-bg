@@ -58,7 +58,6 @@ requirements:
 
 .PHONY: test
 test: 
-	@make format
 	poetry run pytest . -x -s --cov=code -vv
 	poetry run coverage html
 

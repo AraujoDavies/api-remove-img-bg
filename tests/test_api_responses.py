@@ -3,6 +3,12 @@ from unittest.mock import patch
 import pytest
 
 
+@pytest.mark.front
+def test_if_front_works(client_fastapi):
+    response = client_fastapi.get("/")
+    assert response.status_code == 200
+
+
 @pytest.mark.upload_file
 def test_if_returns_success(client_fastapi):
     with open("tests/imgs/pep.jpg", "rb") as f:
@@ -23,10 +29,10 @@ def test_if_accept_only_jpg_or_png(client_fastapi):
     assert response.json()["error_message"] == "Only accept .png or .jpg"
 
 
-@pytest.mark.skip(reason="Now is more than 500kb")
+@pytest.mark.xfail(reason="Maybe File not found.")
 @pytest.mark.upload_file
 def test_if_accept_files_bigger_than_500kb(client_fastapi):
-    with open("tests/imgs/big.png", "rb") as f:
+    with open("tests/imgs/video.mp4", "rb") as f:
         response = client_fastapi.post(
             "/upload-file", files={"file": (f.name, f, "image/png")}
         )
@@ -48,3 +54,13 @@ def test_if_server_error(client_fastapi):
 
             assert response.status_code == 500
             assert response.json()["error_message"] == "Internal server error"
+
+
+@pytest.mark.upload_file
+def test_if_returns_validation_error(client_fastapi):
+    with open("tests/imgs/pep.jpg", "rb") as f:
+        response = client_fastapi.post(
+            "/upload-file", files={"file2": (f.name, f, "image/png")}
+        )
+    assert response.status_code == 422
+    assert response.json()["error_message"] == "Validation error - Field required."

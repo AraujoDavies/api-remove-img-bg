@@ -5,3 +5,4 @@ htmlcov/
 .pytest_cache/ 
 docs/
 mkdocs.yml
+*.mp4
