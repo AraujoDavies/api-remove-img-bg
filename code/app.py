@@ -1,15 +1,14 @@
 import base64
 import logging
+from pathlib import Path
 from typing import List, Union
 
-from fastapi import Body, FastAPI, File, HTTPException, Request, UploadFile
-from fastapi.exceptions import RequestValidationError, ValidationException
+from fastapi import FastAPI, File, HTTPException, Request, UploadFile
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel
 from rembg import remove
 from starlette.status import HTTP_422_UNPROCESSABLE_ENTITY
-from pathlib import Path
-
 
 logging.basicConfig(
     level=logging.CRITICAL,
